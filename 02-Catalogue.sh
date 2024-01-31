@@ -65,7 +65,7 @@ cd /app &>> $LOGFILE
 
 VALIDATE $? "changed to app directory"
 
-unzip /tmp/catalogue.zip &>> $LOGFILE
+unzip -o /tmp/catalogue.zip &>> $LOGFILE
 
 VALIDATE $? "unzipping the catalogue.zip file in app dir"
 
@@ -73,7 +73,7 @@ npm install &>> $LOGFILE
 
 VALIDATE $? "dependencies Installed"
 
-cp /home/centos/catalogue.service /etc/systemd/system/catalogue.service &>> $LOGFILE
+cp /home/centos/RoboShop-ShellScripts/catalogue.service /etc/systemd/system/catalogue.service &>> $LOGFILE
 
 VALIDATE $? "copied catalogue.service to server"
 
