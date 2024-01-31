@@ -43,18 +43,53 @@ dnf install nodejs -y &>> $LOGFILE
 VALIDATE $? "Nodejs Installed"
 
 useradd roboshop &>> $LOGFILE
+
+VALIDATE $? "Roboshop user added"
+
 mkdir -p /app &>> $LOGFILE
+
+VALIDATE $? "App directory created"
+
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>> $LOGFILE
+
+VALIDATE $? "catalog.zip file downloaded"
+
 cd /app &>> $LOGFILE
+
+VALIDATE $? "changed to app directory"
+
 unzip /tmp/catalogue.zip &>> $LOGFILE
+
+VALIDATE $? "unzipping the catalogue.zip file in app dir"
+
 npm install &>> $LOGFILE
 
-cp catalogue.service /etc/systemd/system/catalogue.service &>> $LOGFILE
+VALIDATE $? "dependencies Installed"
+
+cp /home/centos/catalogue.service /etc/systemd/system/catalogue.service &>> $LOGFILE
+
+VALIDATE $? "copied catalogue.service to server"
+
 systemctl daemon-reload &>> $LOGFILE
+
+VALIDATE $? "daemon-reload"
+
 systemctl enable catalogue &>> $LOGFILE
+
+VALIDATE $? "enable catalogue"
+
 systemctl start catalogue &>> $LOGFILE
 
+VALIDATE $? "start catalogue"
+
 cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+
+VALIDATE $? "mongo.repo copied to server"
+
 dnf install mongodb-org-shell -y &>> $LOGFILE
 
+VALIDATE $? "install mongodb-org-shell"
+
 mongo --host mongodb.njkdr.online </app/schema/catalogue.js &>> $LOGFILE
+
+VALIDATE $? "Pushing the data to catalogue from mongodb"
