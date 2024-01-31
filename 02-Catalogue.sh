@@ -51,8 +51,6 @@ else
     echo -e "roboshop user already exist $Y SKIPPING $N"
 fi
 
-VALIDATE $? "Roboshop user added"
-
 mkdir -p /app &>> $LOGFILE
 
 VALIDATE $? "App directory created"
@@ -89,7 +87,7 @@ systemctl start catalogue &>> $LOGFILE
 
 VALIDATE $? "start catalogue"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+cp /home/centos/RoboShop-ShellScripts/mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
 VALIDATE $? "mongo.repo copied to server"
 
