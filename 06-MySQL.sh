@@ -19,7 +19,7 @@ VALIDATE(){
         echo -e "$2 .... $R FAILED $N"
         exit 1
     else
-        echo -e "$2 .... $R SUCCESS $N"
+        echo -e "$2 .... $G SUCCESS $N"
     fi
 }
 
@@ -35,7 +35,7 @@ dnf module disable mysql -y
 
 VALIDATE $? "Disabling default mysql version"
 
-cp mysql.repo /etc/yum.repos.d/mysql.repo
+cp /home/centos/RoboShop-ShellScripts/mysql.repo /etc/yum.repos.d/mysql.repo
 
 VALIDATE $? "Coping mysql.repo to server"
 
