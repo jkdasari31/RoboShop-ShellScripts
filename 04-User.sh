@@ -9,8 +9,6 @@ N="\e[0m"
 TIMESTAMP=$(date +%F-%H-%M-%s)
 LOGFILE="/tmp/$0-$TIMESTAMP.log"
 
-exec &>>$LOGFILE
-
 echo "Script started executing at $TIMESTAMP" &>> $LOGFILE
 
 VALIDATE(){
@@ -31,64 +29,71 @@ else
     echo "You are root User"
 fi # fi means reverse of if, indicating condition end
 
-dnf module disable nodejs -y
+dnf module disable nodejs -y &>>$LOGFILE
 
 VALIDATE $? "Disabling nodejs default version"
 
-dnf module enable nodejs:18 -y
+dnf module enable nodejs:18 -y &>>$LOGFILE
 
 VALIDATE $? "Enabling nodejs 18 version"
 
-dnf install nodejs -y
+dnf install nodejs -y &>>$LOGFILE
 
 VALIDATE $? "Installing nodejs 18 version"
 
-useradd roboshop
+id roboshop #if roboshop user does not exist, then it is failure
+if [ $? -ne 0 ]
+then
+    useradd roboshop &>>$LOGFILE
+    VALIDATE $? "roboshop user creation"
+else
+    echo -e "roboshop user already exist $Y SKIPPING $N"
+fi
 
-VALIDATE $? "Roboshop user added"
-
-mkdir -p /app
+mkdir -p /app &>>$LOGFILE
 
 VALIDATE $? "App directory created"
 
-curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip
+curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>>$LOGFILE
 
 VALIDATE $? "Zip file downloaded"
 
-cd /app 
+cd /app &>>$LOGFILE
 
-unzip /tmp/user.zip
+VALIDATE $? "changed to app directory" 
 
-VALIDATE $? "Unzipping the user.zip "
+unzip /tmp/user.zip &>>$LOGFILE
 
-npm install 
+VALIDATE $? "Unzipping the user.zip " 
+
+npm install &>>$LOGFILE
 
 VALIDATE $? "Dependencies installed"
 
-cp user.service /etc/systemd/system/user.service
+cp /home/centos/RoboShop-ShellScripts/user.service /etc/systemd/system/user.service &>>$LOGFILE
 
 VALIDATE $? "Copied user.service to server /etc/systemd/system "
 
-systemctl daemon-reload
+systemctl daemon-reload &>>$LOGFILE
 
 VALIDATE $? "Daemon reloaded"
 
-systemctl enable user 
+systemctl enable user &>>$LOGFILE
 
 VALIDATE $? "Enabled USER "
 
-systemctl start user
+systemctl start user &>>$LOGFILE
 
 VALIDATE $? "Stared User service"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo
+cp /home/centos/RoboShop-ShellScripts/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
 
 VALIDATE $? "Copied mongo.repo to server"
 
-dnf install mongodb-org-shell -y
+dnf install mongodb-org-shell -y &>>$LOGFILE
 
 VALIDATE $? "Installing mongodb-org-shell"
 
-mongo --host mongodb.njkdr.online </app/schema/user.js
+mongo --host mongodb.njkdr.online </app/schema/user.js &>>$LOGFILE
 
 VALIDATE $? "Pushing the USER data to schema"
