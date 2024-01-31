@@ -19,7 +19,7 @@ VALIDATE(){
         echo -e "$2 .... $R FAILED $N"
         exit 1
     else
-        echo -e "$2 .... $R SUCCESS $N"
+        echo -e "$2 .... $G SUCCESS $N"
     fi
 }
 
@@ -43,9 +43,14 @@ dnf install nodejs -y
 
 VALIDATE $? "Installing nodejs 18 version"
 
-useradd roboshop
-
-VALIDATE $? "Roboshop user added"
+id roboshop #if roboshop user does not exist, then it is failure
+if [ $? -ne 0 ]
+then
+    useradd roboshop &>>$LOGFILE
+    VALIDATE $? "roboshop user creation"
+else
+    echo -e "roboshop user already exist $Y SKIPPING $N"
+fi
 
 mkdir -p /app
 
@@ -57,7 +62,7 @@ VALIDATE $? "Zip file downloaded"
 
 cd /app 
 
-unzip /tmp/cart.zip
+unzip -o /tmp/cart.zip
 
 VALIDATE $? "Unzipping the cart.zip "
 
@@ -65,7 +70,7 @@ npm install
 
 VALIDATE $? "Dependencies installed"
 
-cp cart.service /etc/systemd/system/cart.service
+cp /home/centos/RoboShop-ShellScripts/cart.service /etc/systemd/system/cart.service
 
 VALIDATE $? "Copied cart.service to server /etc/systemd/system "
 
